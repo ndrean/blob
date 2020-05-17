@@ -5,41 +5,148 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
 </head>
 
 <body>
     <div class="container">
+        <h1>Examples of usage of blobs</h1>
         <div class="row">
             <h3> Stylesheet stored in a blob</h3>
-            <p>We stored <em>CSS</em> in the a <em>blob</em>, and then create a <em>link</em> element, and set it's
-                <em>href</em> attribute as the URL of the blob. We put the <em>h1</em> with background yellow and the
-                <em>button</em> have text in red. </h1>
-            </p>
-            <h3>Exemple du display du data d'un blob avec FileReader</h3>
+            <p>We stored <em>CSS</em> in the a <em>blob</em>: we put the <em>h3</em> tag with
+                background yellow and the <em>button</em> tags will have the text in red. </p>
+            <pre>
+                const styleBodyWithBlob = new Blob(
+                    ["h3 { background-color: yellow; } button {color: red; font-size:20px;}"],
+                    { type: "text/css" }
+                );
+            </pre>
+            <p> Then we create a <em>link</em> element. </p>
+            <pre>
+                const link = document.createElement("link");
+            </pre>
+            <p> Then we set it's <em>rel</em> attribute:</p>
+            <pre>
+                link.rel = "stylesheet"
+            </pre>
+            <p>We create a link to the data-blob:</p>
+            <pre>
+                const blobLinkURL = URL.createObjectURL(blobLink);
+            </pre>
+            <p>Then we set the <em>href</em> attribute to the URL of the blob
+                <code>&ltlink rel="stylesheet" href="styleBodyWithBlob"></code>
+                and append it to the <code>&lthead></code> section.</p>
+            <pre>
+                link.href = URL.createObjectURL(styleBodyWithBlob);
+                document.head.appendChild(link);
+            </pre>
+        </div>
+        <div class="row">
+            <h3>Display blob content with FileReader</h3>
             <p>The test below is the data array of a <em>blob</em> and we use a <em>FileReader</em> to read
-                asynchronously the
-                data and when finished, the <em>loadend</em> event of the <em>FileReader</em> callback the attachment to
+                asynchronously the data and when finished, the <em>loadend</em> event of the <em>FileReader</em>
+                callback the attachment to
                 the
                 DOM.</p>
-            <div id="insertFile"></div>
-
-            <br>
-            <h3>Exemple du display du data d'un blob via un link</h3>
-            <p>We create an <em>'a'</em> link and sets it's <em>href</em> attribute to be the <em>URL</em> of a blob.
-                Follow the
-                link to see what's in the data of the blob</p>
-            <div id="insertLink"></div>
-
-            <br>
-            <div id="linkbody"></div>
-
-            <h3>Exemple of blob and web worker</h3>
+            <p>We define a blob content as some HTML text:</p>
+            <pre>
+                const textBlobHtml = new Blob(
+                    [
+                    `&ltp>\"Workers allows a page to run Javascript on a background thread so the main UI thread can remain responsive.
+                    Workers do not have access to the DOM or any global variables in the main UI thread and must use the postMessage()
+                    method to communicate with the main thread.\" &lt/p>,
+                    &ltp>\"The FileReader object lets web applications asynchronously read the contents of files (or raw data buffers)
+                    stored on the user's computer, using File or Blob objects to specify the file or data to read.\"&lt/p>`,
+                    ],
+                    { type: "text/html" }
+                );
+            </pre>
+            <p>The <em>FileReader</em> lets web app load asynchronously contents of files-blobs.</p>
+            <pre>
+                const myReader = new FileReader();
+                myReader.readAsText(textBlobHtml);
+            </pre>
+            <p>Then onload we insert the blob content into the DOM with <code>e.target.result</code>:</p>
+            <pre>
+                myReader.addEventListener("loadend", (e) => {
+                    document.getElementById("insertFile").innerHTML = e.target.result;
+                });
+            </pre>
+            <div id="insertFile" class="border"></div>
         </div>
+        <br>
+        <div class="row">
+            <h3>Display blob content via a link</h3>
+            <p>We create an <code>&lta></code> link and sets it's <em>href</em> attribute to be the <em>URL</em>
+                of a blob.</p>
+            <pre>
+            const blobLink = new Blob(
+                [
+                    "&lth1 style="color:red">I am the data of the blob &lt/h1>",
+                    &ltp> Yet another line&lt/p>",
+                ], { type: "text/html" }
+            );
+            </pre>
+
+            <p>We create a link to this data-blob</p>
+            <pre>
+                const blobLinkURL = URL.createObjectURL(blobLink);
+            </pre>
+
+            <p>The link is added to the DOM which will display the data-blob:</p>
+            <pre>
+                document.getElementById("insertLink").innerHTML =
+                    ` &ltspan>
+                        &lta href="${blobLinkURL}">This link&lt/a> will display the data (text/html) of a blob showed below:
+                    &lt/span> `;
+            </pre>
+            <p>Below is a div where the data of the blob is inserted:</p>
+            <div id="insertLink" class="border"></div>
+        </div>
+        <div class="row">
+            <h3>Blob content is a script, used by a worker</h3>
+            <form id="scriptForm">
+                <input type="text" name="inputscript">
+                <button type="submit">Calc</button>
+            </form>
+
+        </div>
+
+        <br>
+        <div id="runScript" class="border"></div>
+        <p>We defined the blob content to be a script,
+            of type <code>"applciation/javascript</code></p>
+        <pre>
+            const blobCode = new Blob(
+                ["onmessage = (e) =>{ postMessage(e.data**2) };"],
+                { type: "application/javascript",}
+            );
+            const codeURL = URL.createObjectURL(blobCode);
+            // Creates and starts a background thread that runs the code pointed at by scriptURL of type 'string'
+            const worker = new Worker(codeURL);
+        </pre>
+        <p>Then start the worker by passing him some data (the input) with the method <code>postMessage()</code>and the
+            main
+            thread will listen to the worker's messages with the event <em>message</em>
+            and the data is contained in <code>event.data</code>.</p>
+        <pre>
+            // pass data to the worker
+            document.querySelector("#scriptForm").addEventListener("submit", (e) => {
+                e.preventDefault();
+                const nb = document.querySelector("input").value;
+                worker.postMessage(nb);
+            });
+            
+            // main listens to worker's message and do something with e.data.
+            worker.addEventListener("message", (e) => {
+                document.querySelector("#runScript").textContent = e.data;
+            });
+        </pre>
+        <hr>
     </div>
 
     <script type="module" src="index.js"></script>
-    </div>
-    </div>
 </body>
 
 </html>
