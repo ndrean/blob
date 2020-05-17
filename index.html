@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <div class="container">
+        <div class="row">
+            <h3> Stylesheet stored in a blob</h3>
+            <p>We stored <em>CSS</em> in the a <em>blob</em>, and then create a <em>link</em> element, and set it's
+                <em>href</em> attribute as the URL of the blob. We put the <em>h1</em> with background yellow and the
+                <em>button</em> have text in red. </h1>
+            </p>
+            <h3>Exemple du display du data d'un blob avec FileReader</h3>
+            <p>The test below is the data array of a <em>blob</em> and we use a <em>FileReader</em> to read
+                asynchronously the
+                data and when finished, the <em>loadend</em> event of the <em>FileReader</em> callback the attachment to
+                the
+                DOM.</p>
+            <div id="insertFile"></div>
+
+            <br>
+            <h3>Exemple du display du data d'un blob via un link</h3>
+            <p>We create an <em>'a'</em> link and sets it's <em>href</em> attribute to be the <em>URL</em> of a blob.
+                Follow the
+                link to see what's in the data of the blob</p>
+            <div id="insertLink"></div>
+
+            <br>
+            <div id="linkbody"></div>
+
+            <h3>Exemple of blob and web worker</h3>
+        </div>
+    </div>
+
+    <script type="module" src="index.js"></script>
+    </div>
+    </div>
+</body>
+
+</html>
